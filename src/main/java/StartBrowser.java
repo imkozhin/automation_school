@@ -1,9 +1,9 @@
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.google.common.collect.Lists;
 import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -21,7 +21,7 @@ public class StartBrowser {
     WebDriver driver;
 
     @Before
-    public void setUp() throws MalformedURLException{
+    public void setUp() throws Exception {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("deviceName","Emulator");
         capabilities.setCapability("platformName", "Android");
@@ -30,27 +30,40 @@ public class StartBrowser {
         driver = new RemoteWebDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
     }
 
+    @After
+    public void tearDown() {
+        driver.quit();
+    }
+
     @Test
     public void test() throws Exception {
+
+        //создаю объект WebDriverWait с его помощью сделаю ожидание событий.
         WebDriverWait wait = new WebDriverWait(driver, 10);
 
         try {
+            //Если не нахожу омнибокс значит появилось окно приветствия.
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bro_sentry_bar_fake")));
         }
         catch (Exception s){
+            //закрываю экран приветствия если появился
             wait.until(ExpectedConditions.elementToBeClickable(By.id("activity_tutorial_close_button"))).click();
         }
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bro_sentry_bar_fake")));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bro_sentry_bar_fake")));
 
+        //тап в омнибокс
         WebElement arrow = driver.findElement(By.id("bro_sentry_bar_fake_text"));
         arrow.click();
 
+        //ввожу cats в строку поиска
         WebElement arrowEdit = driver.findElement(By.id("bro_sentry_bar_input_edittext"));
-        arrowEdit.sendKeys("cat");
+        arrowEdit.sendKeys("cats");
 
-        WebElement suggestN3 = driver.findElement(By.xpath("//*[@class='android.widget.RelativeLayout' and @index = '2']"));
-        suggestN3.click();
+        //нахожу 3 строку в саджесте
+        List<WebElement> suggestList = driver.findElements(By.id("bro_common_omnibox_text_layout"));
+        Lists.reverse(suggestList).get(2).click();
 
+        //Определение загрузки страницы по логам
         Date starttime = new Date();    //фиксирую время тапа
         List<LogEntry> logEntryList;    //массив для хранения логов
         boolean pageload = false;       //индикатор загрузки страницы
@@ -62,16 +75,18 @@ public class StartBrowser {
             //Жду 5 секунд
             WebDriverWait wd = new WebDriverWait(driver, 5);
             try {
+                //Пытаемся найти несуществующий элимент i секунд
                 wd.until(ExpectedConditions.elementToBeClickable(By.id("NONEXISTENT ELEMENT")));
             }
             catch (Exception s){
+                //Ничего не делаем
             }
 
             //беру у драйвера логи
             logEntryList = (List<LogEntry>) driver.manage().logs().get("logcat").filter(Level.ALL);
 
             //Создаю обьект LogParser передаю в него массив логов и время тапа
-            LogParser lp = new LogParser(logEntryList, starttime);
+            LogsParser lp = new LogsParser(logEntryList, starttime);
             //Запускаю поиск. если находим "url opened" то выходим
             if(lp.FindStringInLog("url opened")){
                 i=3;
@@ -84,8 +99,4 @@ public class StartBrowser {
         assertTrue(pageload);
     }
 
-    @After
-    public void tearDown(){
-        driver.quit();
-    }
 }
