@@ -49,7 +49,6 @@ public class StartBrowser {
             //закрываю экран приветствия если появился
             wait.until(ExpectedConditions.elementToBeClickable(By.id("activity_tutorial_close_button"))).click();
         }
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bro_sentry_bar_fake")));
 
         //тап в омнибокс
         WebElement arrow = driver.findElement(By.id("bro_sentry_bar_fake_text"));
@@ -83,7 +82,7 @@ public class StartBrowser {
             }
 
             //беру у драйвера логи
-            logEntryList = (List<LogEntry>) driver.manage().logs().get("logcat").filter(Level.ALL);
+            logEntryList = driver.manage().logs().get("logcat").filter(Level.ALL);
 
             //Создаю обьект LogParser передаю в него массив логов и время тапа
             LogsParser lp = new LogsParser(logEntryList, starttime);
