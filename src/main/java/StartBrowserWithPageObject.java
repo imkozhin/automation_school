@@ -3,13 +3,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
-import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -18,17 +16,20 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static junit.framework.TestCase.assertTrue;
 
-public class StartBrowser {
+public class StartBrowserWithPageObject {
+
     WebDriver driver;
+    PageObject PageObject;
 
     @Before
-    public void setUp() throws Exception {
+    public void setup() throws Exception {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("deviceName","Emulator");
         capabilities.setCapability("platformName", "Android");
         capabilities.setCapability("appPackage", "com.yandex.browser");
         capabilities.setCapability("appActivity", "YandexBrowserActivity");
         driver = new RemoteWebDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+        PageObject = new PageObject(driver);
     }
 
     @After
@@ -44,24 +45,21 @@ public class StartBrowser {
 
         try {
             //Если не нахожу омнибокс значит появилось окно приветствия.
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bro_sentry_bar_fake")));
+            wait.until(ExpectedConditions.elementToBeClickable(PageObject.omnibox));
         }
         catch (Exception s){
             //закрываю экран приветствия если появился
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("activity_tutorial_close_button"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(PageObject.closeTutorialButton)).click();
         }
 
         //тап в омнибокс
-        WebElement arrow = driver.findElement(By.id("bro_sentry_bar_fake_text"));
-        arrow.click();
+        PageObject.omnibox.click();
 
         //ввожу cats в строку поиска
-        WebElement arrowEdit = driver.findElement(By.id("bro_sentry_bar_input_edittext"));
-        arrowEdit.sendKeys("cats");
+        PageObject.omniboxEditText.sendKeys("cats");
 
-        //нахожу 3 строку в саджесте
-        List<WebElement> suggestList = driver.findElements(By.id("bro_common_omnibox_text_layout"));
-        Lists.reverse(suggestList).get(2).click();
+        //нахожу 3 строку в саджесте и тапаю
+        PageObject.suggestThirdElement.get(2).click();
 
         //Определение загрузки страницы по логам
         Date starttime = new Date();    //фиксирую время тапа
