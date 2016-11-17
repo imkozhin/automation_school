@@ -10,10 +10,11 @@ import org.junit.runner.Description;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import ru.yandex.qatools.allure.annotations.Title;
 
+import java.awt.*;
 import java.net.URL;
 
-@Title("Урок 4 - Steps и Allure репорт")
-public class StartBrowserWithSteps {
+@Title("Урок 5 Использование Hamcrest")
+public class CheckSuggestFromMatcher {
 
     private static final String TESTOBJECT = "http://127.0.0.1:4723/wd/hub";
     private AppiumDriver driver;
@@ -47,37 +48,32 @@ public class StartBrowserWithSteps {
         }
     };
 
-    @Title("Ишем котиков в саджесте №1")
+    @Title("Проверка саджеста на > 1")
     @Test
-    public void appiumTestSuggest1() throws Exception {
+    public void checkSuggestNotNull() throws Exception {
+        steps.closeTutorial();
+        steps.clickToOmnibox();
+        steps.sendKeys("cats");
+        steps.checkSuggestNotNull(1);
+    }
 
+    @Title("Проверка цветов в историческом саджесте")
+    @Test
+    public void checkSuggestTextColor() throws Exception {
         steps.closeTutorial();
         steps.clickToOmnibox();
         steps.sendKeys("cat");
+        steps.checkSuggestNotNull(1);
         steps.suggestClick(1);
-        steps.waitLoadPage(30);
-    }
 
-    @Title("Отладка: Ишем котиков и падаем")
-    @Test
-    public void appiumTestSuggest2() throws Exception {
-
-        steps.closeTutorial();
-        steps.clickToOmnibox();
+        steps.tapOmniboxOnWebPage();
+        steps.tapOmniboxDeleteButton();
         steps.sendKeys("cat");
-        steps.suggestClick(2);
-        steps.waitLoadPage(30);
-        steps.failedDebugStep();
+        steps.checkSuggestNotNull(1);
+        Color color1 = new Color(148, 148, 148);
+        Color color2 = new Color(86, 28, 140);
+        steps.shouldContainColors(PageObject.historySuggest.suggestText, color1, color2);
+
     }
 
-    @Title("Ишем котиков в саджесте №3")
-    @Test
-    public void appiumTestSuggest3() throws Exception {
-
-        steps.closeTutorial();
-        steps.clickToOmnibox();
-        steps.sendKeys("cat");
-        steps.suggestClick(3);
-        steps.waitLoadPage(30);
-    }
 }

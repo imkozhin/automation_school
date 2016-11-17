@@ -3,16 +3,22 @@ import junit.framework.TestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.yandex.qatools.allure.annotations.Attachment;
 import ru.yandex.qatools.allure.annotations.Step;
 
+import java.awt.*;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
 class Steps {
@@ -20,6 +26,7 @@ class Steps {
     private PageObject PageObject;
 
     public AppiumDriver driver;
+    private ScreenshotCollector screenshotCollector;
 
     public Steps (AppiumDriver driver) {
 
@@ -105,4 +112,48 @@ class Steps {
     public byte[] makeScreenshot() {
         return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
     }
+
+    @Step
+    public void checkSuggestNotNull(int i) {
+        assertThat(PageObject.suggestList, hasSize(greaterThan(i)));
+    }
+
+
+    @Step
+    public void tapOmniboxOnWebPage() {
+        PageObject.omniboxWebPage.click();
+    }
+
+    @Step
+    public void tapOmniboxDeleteButton() {
+        PageObject.omniboxDeleteButton.click();
+    }
+
+    @Step("{0} should contain {1} and {2} colors")
+    public void shouldContainColors(WebElement element, Color c1, Color c2) throws Exception {
+        assertThat(c1 + " and " + c2 + " not found in " + element, screenshotCollector.collect(element),
+                both(CustomMatcher.hasColor(c1)).and(CustomMatcher.hasColor(c2)));
+    }
+
+    @Step("{0} should not be displayed")
+    public void shouldNotBeDisplayed(WebElement element) {
+        assertThat(element + " found", !element.isDisplayed());
+    }
+
+    @Step("{0} should contain text: {1}")
+    public void shouldContainText(WebElement element, String text) {
+        assertThat(text + " not found", element.getText().contains(text));
+    }
+
+    @Step("Tap on {0}")
+    public void click(WebElement element){
+        element.click();
+    }
+
+    @Attachment
+    public byte[] saveScreenshot() {
+        return driver.getScreenshotAs(OutputType.BYTES);
+    }
+
+
 }

@@ -10,10 +10,11 @@ import org.junit.runner.Description;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import ru.yandex.qatools.allure.annotations.Title;
 
+import java.awt.*;
 import java.net.URL;
 
-@Title("Урок 4 - Steps и Allure репорт")
-public class StartBrowserWithSteps {
+@Title("Урок 6 Проверка Колдунщика погоды")
+public class CheckSuggestWizard {
 
     private static final String TESTOBJECT = "http://127.0.0.1:4723/wd/hub";
     private AppiumDriver driver;
@@ -47,37 +48,16 @@ public class StartBrowserWithSteps {
         }
     };
 
-    @Title("Ишем котиков в саджесте №1")
+    @Title("Проверка колдунщика погоды")
     @Test
-    public void appiumTestSuggest1() throws Exception {
-
+    public void checkTextSuggestWizard() throws Exception {
         steps.closeTutorial();
         steps.clickToOmnibox();
-        steps.sendKeys("cat");
-        steps.suggestClick(1);
-        steps.waitLoadPage(30);
+        steps.sendKeys("pogoda v moskve");
+        steps.shouldNotBeDisplayed(PageObject.historySuggest.clockIcon);
+        steps.shouldContainText(PageObject.wizardSuggest.wizardText, "°C");
+
     }
 
-    @Title("Отладка: Ишем котиков и падаем")
-    @Test
-    public void appiumTestSuggest2() throws Exception {
 
-        steps.closeTutorial();
-        steps.clickToOmnibox();
-        steps.sendKeys("cat");
-        steps.suggestClick(2);
-        steps.waitLoadPage(30);
-        steps.failedDebugStep();
-    }
-
-    @Title("Ишем котиков в саджесте №3")
-    @Test
-    public void appiumTestSuggest3() throws Exception {
-
-        steps.closeTutorial();
-        steps.clickToOmnibox();
-        steps.sendKeys("cat");
-        steps.suggestClick(3);
-        steps.waitLoadPage(30);
-    }
 }

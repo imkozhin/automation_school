@@ -3,6 +3,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
+import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class StartBrowserWithPageObject {
         capabilities.setCapability("platformName", "Android");
         capabilities.setCapability("appPackage", "com.yandex.browser");
         capabilities.setCapability("appActivity", "YandexBrowserActivity");
-        driver = new RemoteWebDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
         PageObject = new PageObject(driver);
     }
 
