@@ -1,6 +1,6 @@
-import org.openqa.selenium.logging.LogEntry;
 import java.util.Date;
 import java.util.List;
+import org.openqa.selenium.logging.LogEntry;
 
 class LogsParser {
 
@@ -30,4 +30,23 @@ class LogsParser {
         //не нашли
         return false;
     }
+
+    //Поиск строки по логам
+    public boolean findStringInLogWithoutTimer(String findString ){
+
+        //перебор массива
+        for(LogEntry l :  logEntryList ){
+            //фильтрую по тегу ReportManager
+            if(l.getMessage().contains("D/[Ya:ReportManager]")){
+                //ищу строку
+                if(l.getMessage().contains(findString)){
+                    //совпадение найдено, отдаём на выходе true
+                    return true;
+                }
+            }
+        }
+        //не нашли
+        return false;
+    }
+
 }
